@@ -5,7 +5,12 @@ export function ImposterArt({ imposter }: { imposter: Imposter }) {
   return (
     <div className="imposter-art">
       {imposter.image ? (
-        <img src={imposter.image} alt={imposter.name} />
+        <img
+          src={imposter.image}
+          alt={imposter.name}
+          className={imposter.motion ? `idle-${imposter.motion}` : undefined}
+          draggable={false}
+        />
       ) : (
         <svg viewBox="0 0 120 120" role="img" aria-label={imposter.name}>
           <defs>

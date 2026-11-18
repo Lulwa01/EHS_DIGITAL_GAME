@@ -23,6 +23,8 @@ export interface Imposter {
   scammed: number
   /** Image URL. Leave undefined to use the placeholder silhouette. */
   image?: string
+  /** Gentle idle animation for the image: sway side to side, bob up and down, or hover like it's flying. */
+  motion?: 'sway' | 'bob' | 'hover'
 }
 
 export const AUDIENCES: { id: Audience; label: string }[] = [

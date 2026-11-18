@@ -13,8 +13,8 @@ import {
 import { useRoundTimer } from '../hooks/useRoundTimer'
 import { ImposterArt } from './ImposterArt'
 import { RoundTimer, type Bonus } from './RoundTimer'
+import { ShieldMeter, type ShieldState } from './ShieldMeter'
 import { sound } from '../audio/sound'
-
 /* ---------- Home: choose audience ---------- */
 
 export function HomeScreen({ onStart }: { onStart: (a: Audience) => void }) {
@@ -119,14 +119,18 @@ interface QuizProps {
   audience: Audience
   imposter: Imposter
   questions: Question[]
+  /** True while the instructions popup is open: the clock stops. */
+  frozen?: boolean
   /** timeLeftMs is 0 when the round ended because time ran out. */
   onFinish: (score: number, timeLeftMs: number) => void
 }
 
-export function QuizScreen({ audience, imposter, questions, onFinish }: QuizProps) {
+export function QuizScreen({ audience, imposter, questions, frozen = false, onFinish }: QuizProps) {
   const [index, setIndex] = useState(0)
   const [picked, setPicked] = useState<number | null>(null)
   const [score, setScore] = useState(0)
+  // Per-question outcome: true = correct, false = wrong, null = not answered yet.
+  const [results, setResults] = useState<(boolean | null)[]>(() => questions.map(() => null))
   const [timeUp, setTimeUp] = useState(false)
   // Player tapped the timer bar to stop the clock (e.g. a struggling player needs a moment).
   const [held, setHeld] = useState(false)
@@ -140,7 +144,7 @@ export function QuizScreen({ audience, imposter, questions, onFinish }: QuizProp
   const timer = useRoundTimer({
     totalMs,
     graceMs: GRACE_SECONDS * 1000,
-    paused: answered || timeUp || held,
+    paused: answered || timeUp || held || frozen,
     tickFrom: DANGER_SECONDS,
     onStart: () => sound.play('timerStart'),
     onTick: (s) => sound.play(s <= 5 ? 'tickUrgent' : 'tick'),
@@ -168,6 +172,7 @@ export function QuizScreen({ audience, imposter, questions, onFinish }: QuizProp
   function pick(i: number, at: number) {
     if (answered || timeUp) return
     setPicked(i)
+    setResults((r) => r.map((v, k) => (k === index ? i === q.answer : v)))
     if (i !== q.answer) {
       sound.play('wrong')
       return
@@ -205,16 +210,18 @@ export function QuizScreen({ audience, imposter, questions, onFinish }: QuizProp
 
   return (
     <section className="screen quiz">
-      <div className="counter" aria-label={`Question ${index + 1} of ${questions.length}`}>
-        <span>{index + 1}</span>
-        <span className="counter-dim"> / {questions.length}</span>
-      </div>
+      <ShieldMeter
+        states={results.map<ShieldState>((r, i) =>
+          r === true ? 'earned' : r === false ? 'missed' : i === index && !timeUp ? 'current' : 'upcoming',
+        )}
+      />
+      <p className="sr-only" aria-live="polite">{`Question ${index + 1} of ${questions.length}`}</p>
 
       <RoundTimer
         visible={timer.started}
         remainingMs={timer.remaining}
         totalMs={totalMs}
-        paused={(answered || held) && !timeUp}
+        paused={(answered || held || frozen) && !timeUp}
         held={held}
         onToggle={
           answered || timeUp
@@ -307,7 +314,11 @@ export function ResultScreen({ name, imposter, score, total, timeLeftMs, onPlayA
     <section className="screen center">
       <h1 className={`display title-md tone-${result.tone}`}>{result.title}</h1>
       <div className="card score-box">
-        {score} / {total}
+        <ShieldMeter
+          size="lg"
+          staggerMs={220}
+          states={Array.from({ length: total }, (_, i) => (i < score ? 'earned' : 'missed'))}
+        />
       </div>
       <p className={`time-chip${timeLeftMs <= 0 ? ' is-out' : ''}`}>
         {timeLeftMs <= 0 ? '⏱ Time ran out' : `⏱ ${formatTime(timeLeftMs)} left on the clock`}

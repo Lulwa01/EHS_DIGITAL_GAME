@@ -16,6 +16,7 @@ export default function App() {
   const [timeLeftMs, setTimeLeftMs] = useState(0)
   const [round, setRound] = useState(0) // remounts the quiz on replay
   const [muted, setMuted] = useState(false)
+  const [helpOpen, setHelpOpen] = useState(false)
 
   // Browsers only allow audio after a user gesture, so start the music on the first interaction.
   useEffect(() => {
@@ -38,6 +39,11 @@ export default function App() {
   return (
     <Shell
       muted={muted}
+      helpOpen={helpOpen}
+      onHelp={(open) => {
+        sound.play('click')
+        setHelpOpen(open)
+      }}
       onHome={() => go('home')}
       onToggleSound={() => {
         sound.setMuted(!muted)
@@ -77,6 +83,7 @@ export default function App() {
           audience={audience}
           imposter={imposter}
           questions={questions}
+          frozen={helpOpen}
           onFinish={(s, left) => {
             setScore(s)
             setTimeLeftMs(left)

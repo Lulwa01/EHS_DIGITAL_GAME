@@ -13,7 +13,7 @@
   --text: #f2f0ff;
   --text-dim: #b9b4d8;
   --card: rgba(10, 10, 32, 0.72);
-  --border: rgba(140, 125, 245, 0.55);
+  --border: rgba(31, 14, 139, 0.55);
   --border-soft: rgba(140, 125, 245, 0.28);
   --primary-a: #a97ff3;
   --primary-b: #7c3aed;
@@ -77,24 +77,197 @@ button {
   display: flex;
   justify-content: space-between;
 }
+.topbar-right {
+  display: flex;
+  gap: 14px;
+}
 
+/* ---------- How to Play popup ---------- */
+
+.help {
+  width: min(940px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: linear-gradient(180deg, #1c1250 0%, #0d0b2a 100%);
+  color: var(--text);
+  box-shadow: 0 0 40px rgba(124, 58, 237, 0.4), 0 20px 50px rgba(0, 0, 0, 0.5);
+  overflow: auto;
+}
+.help[open] {
+  animation: help-in 0.25s ease-out both;
+}
+.help::backdrop {
+  background: rgba(5, 4, 20, 0.7);
+  backdrop-filter: blur(4px);
+}
+.help-panel {
+  position: relative;
+  padding: 32px clamp(20px, 5vw, 36px) 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.help-title {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
+}
+.help-x {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.04);
+  display: grid;
+  place-items: center;
+  transition: border-color 0.2s, background 0.2s;
+}
+.help-x:hover {
+  border-color: var(--primary-a);
+  background: rgba(124, 58, 237, 0.2);
+}
+.help-x svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+.help-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.help-steps li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-soft);
+}
+@media (max-width: 820px) {
+  .help-steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 540px) {
+  .help-steps {
+    grid-template-columns: 1fr;
+  }
+}
+.help-steps strong {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.help-steps p {
+  margin: 0;
+  color: var(--text-dim);
+  font-weight: 300;
+  line-height: 1.45;
+}
+.help-num {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  background: linear-gradient(160deg, #4f2db0, #2e1a72);
+  border: 1.5px solid rgba(169, 127, 243, 0.6);
+}
+.help-shields {
+  margin-top: 10px;
+  display: flex;
+  pointer-events: none;
+}
+.help-shields .shields {
+  gap: 6px;
+}
+.help-shields .shield {
+  width: 28px;
+  height: 32px;
+}
+.help-shields .shield::before {
+  display: none;
+}
+.help-ok {
+  align-self: center;
+  margin-top: 4px;
+}
+@keyframes help-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Purple buttons in the character palette, kept fairly flat */
 .icon-btn {
+  position: relative;
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: rgba(10, 10, 30, 0.4);
-  border: 1px solid rgba(200, 195, 240, 0.4);
+  background: linear-gradient(160deg, #4f2db0 0%, #2e1a72 100%);
+  border: 1.5px solid rgba(169, 127, 243, 0.6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
   display: grid;
   place-items: center;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: transform 0.15s ease, border-color 0.2s, box-shadow 0.2s;
 }
 .icon-btn svg {
+  position: relative;
   width: 30px;
   height: 30px;
+  overflow: visible;
 }
 .icon-btn:hover {
+  transform: translateY(-1px);
   border-color: var(--primary-a);
-  box-shadow: 0 0 18px rgba(124, 58, 237, 0.4);
+  box-shadow: 0 0 16px rgba(124, 58, 237, 0.5);
+}
+.icon-btn:active {
+  transform: scale(0.97);
+}
+.icon-btn.is-muted {
+  filter: saturate(0.6) brightness(0.85);
+}
+
+.ico-edge {
+  display: none;
+}
+.ico-fill {
+  fill: #fff;
+  stroke: #fff;
+  stroke-width: 1.2;
+}
+.ico-waves path,
+.ico-x path {
+  fill: none;
+  stroke-width: 2.2;
+}
+.ico-waves path {
+  stroke: #fff;
+}
+.ico-x path {
+  stroke: #ff6b9a;
+  stroke-width: 2.6;
 }
 
 .stage {
@@ -315,6 +488,52 @@ input:focus-visible {
   width: 100%;
   object-fit: contain;
 }
+.imposter-art img {
+  /* More room at the bottom than the top lifts the character up in its frame
+     (the glow under each bug sits low, so equal padding made them look sunk). */
+  padding: 3% 10% 20%;
+  box-sizing: border-box;
+}
+
+/* Subtle idle motion for the characters */
+.idle-sway {
+  transform-origin: 50% 90%;
+  animation: idle-sway 3.2s ease-in-out infinite;
+}
+.idle-bob {
+  transform-origin: 50% 100%;
+  animation: idle-bob 2.6s ease-in-out infinite;
+}
+.idle-hover {
+  animation: idle-hover 2.2s ease-in-out infinite;
+}
+@keyframes idle-sway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+@keyframes idle-bob {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(2%) scaleY(0.975);
+  }
+}
+@keyframes idle-hover {
+  0%,
+  100% {
+    transform: translateY(-2.5%) rotate(-1.5deg);
+  }
+  50% {
+    transform: translateY(2.5%) rotate(1deg);
+  }
+}
 
 /* ---------- Quiz ---------- */
 
@@ -323,13 +542,166 @@ input:focus-visible {
   margin-top: -40px;
 }
 
-.counter {
-  align-self: center;
-  font-size: clamp(2.4rem, 5vw, 3.4rem);
-  font-weight: 700;
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
-.counter-dim {
-  color: rgba(255, 255, 255, 0.3);
+
+/* ---------- Shield score meter ---------- */
+
+.shields {
+  align-self: center;
+  display: flex;
+  justify-content: center;
+  gap: clamp(8px, 1.6vw, 16px);
+}
+.shield {
+  position: relative;
+  width: 52px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  outline: none;
+  cursor: default;
+  transition: transform 0.2s ease;
+}
+.shields-lg .shield {
+  width: 76px;
+  height: 85px;
+}
+.shield svg {
+  width: 100%;
+  height: 100%;
+  opacity: 0.28;
+  filter: saturate(0.5);
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+.shield:hover,
+.shield:focus-visible {
+  transform: translateY(-4px) scale(1.08);
+}
+.shield:focus-visible {
+  box-shadow: 0 0 0 2px var(--primary-a);
+}
+.shield:not(.is-earned):hover svg {
+  opacity: 0.5;
+}
+
+/* Lit: answered correctly */
+.shield.is-earned svg {
+  opacity: 1;
+  filter: drop-shadow(0 0 10px rgba(169, 127, 243, 0.65));
+  animation: shield-earn 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+.shield.is-earned::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-a);
+  pointer-events: none;
+  animation: shield-burst 0.7s ease-out both;
+  animation-delay: calc(var(--delay, 0ms) + 120ms);
+}
+/* Wrong answer: stays dim, quick shake */
+.shield.is-missed svg {
+  animation: shield-miss 0.45s ease both;
+}
+/* Question being played now */
+.shield.is-current svg {
+  animation: shield-breathe 1.6s ease-in-out infinite;
+}
+.shield.is-current::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  width: 40%;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--primary-a);
+  box-shadow: 0 0 8px var(--primary-a);
+}
+
+.shield-tip {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translate(-50%, 4px);
+  white-space: nowrap;
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #1a1442;
+  border: 1px solid var(--border-soft);
+  color: var(--text);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 5;
+}
+.shield:hover .shield-tip,
+.shield:focus-visible .shield-tip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@keyframes shield-earn {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.28;
+    filter: saturate(0.5);
+  }
+  60% {
+    transform: scale(1.22) rotate(-6deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes shield-burst {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+@keyframes shield-miss {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-5px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+@keyframes shield-breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .scenario {
@@ -628,10 +1000,7 @@ input:focus-visible {
 /* ---------- Result ---------- */
 
 .score-box {
-  padding: 24px 64px;
-  font-size: clamp(3rem, 8vw, 5.5rem);
-  font-weight: 700;
-  line-height: 1.1;
+  padding: 28px clamp(20px, 5vw, 48px);
 }
 
 /* ---------- Mobile ---------- */
@@ -641,12 +1010,22 @@ input:focus-visible {
     width: 48px;
     height: 48px;
   }
-  .icon-btn svg {
-    width: 24px;
-    height: 24px;
+  .topbar-right {
+    gap: 10px;
+  }  .icon-btn svg {
+    width: 25px;
+    height: 25px;
   }
   .quiz {
     margin-top: 0;
+  }
+  .shield {
+    width: 42px;
+    height: 47px;
+  }
+  .shields-lg .shield {
+    width: 54px;
+    height: 60px;
   }
   .scenario {
     grid-template-columns: 1fr;
