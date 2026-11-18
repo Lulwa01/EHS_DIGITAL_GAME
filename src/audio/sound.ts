@@ -3,7 +3,18 @@
  * works with no audio files. To use your own recordings instead, put MP3s in
  * /public/sounds and set the paths below. A file path always wins over the synth.
  */
-export type Sfx = 'click' | 'select' | 'correct' | 'wrong' | 'win' | 'lose'
+export type Sfx =
+  | 'click'
+  | 'select'
+  | 'correct'
+  | 'wrong'
+  | 'win'
+  | 'lose'
+  | 'timerStart'
+  | 'tick'
+  | 'tickUrgent'
+  | 'bonus'
+  | 'timeUp'
 
 const FILES: { music: string | null } & Record<Sfx, string | null> = {
   music: null, // e.g. '/sounds/bg-music.mp3'
@@ -13,6 +24,11 @@ const FILES: { music: string | null } & Record<Sfx, string | null> = {
   wrong: null,
   win: null,
   lose: null,
+  timerStart: null, // timer bar appears after the grace period
+  tick: null, // last 10 seconds
+  tickUrgent: null, // last 5 seconds
+  bonus: null, // speed bonus earned
+  timeUp: null,
 }
 
 const MUSIC_VOLUME = 0.32
@@ -106,6 +122,23 @@ class SoundEngine {
       case 'wrong':
         this.tone(220, t, 0.18, 'sawtooth', 0.22, 160)
         this.tone(165, t + 0.16, 0.32, 'sawtooth', 0.22, 110)
+        break
+      case 'timerStart':
+        this.tone(660, t, 0.1, 'square', 0.16)
+        this.tone(990, t + 0.14, 0.16, 'square', 0.16)
+        break
+      case 'tick':
+        this.tone(1200, t, 0.035, 'square', 0.1)
+        break
+      case 'tickUrgent':
+        this.tone(1600, t, 0.05, 'square', 0.16)
+        break
+      case 'bonus':
+        ;[84, 88, 91, 96].forEach((n, i) => this.tone(midi(n), t + i * 0.05, 0.14, 'sine', 0.25))
+        break
+      case 'timeUp':
+        this.tone(140, t, 0.7, 'sawtooth', 0.25, undefined, 900)
+        this.tone(147, t, 0.7, 'square', 0.12, undefined, 900)
         break
       case 'win':
         ;[60, 64, 67, 72, 76, 79, 84].forEach((n, i) =>

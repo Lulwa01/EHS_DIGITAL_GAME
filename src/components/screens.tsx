@@ -1,7 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AUDIENCES, type Audience, type Imposter, type Question } from '../data/types'
 import { IMPOSTERS } from '../data/imposters'
+import {
+  DANGER_SECONDS,
+  formatTime,
+  GRACE_SECONDS,
+  LIGHTNING_BONUS_SECONDS,
+  QUICK_BONUS_SECONDS,
+  ROUND_SECONDS,
+  SPEED_BONUS,
+} from '../data/timer'
+import { useRoundTimer } from '../hooks/useRoundTimer'
 import { ImposterArt } from './ImposterArt'
+import { RoundTimer, type Bonus } from './RoundTimer'
 import { sound } from '../audio/sound'
 
 /* ---------- Home: choose audience ---------- */
@@ -105,28 +116,79 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 interface QuizProps {
+  audience: Audience
   imposter: Imposter
   questions: Question[]
-  onFinish: (score: number) => void
+  /** timeLeftMs is 0 when the round ended because time ran out. */
+  onFinish: (score: number, timeLeftMs: number) => void
 }
 
-export function QuizScreen({ imposter, questions, onFinish }: QuizProps) {
+export function QuizScreen({ audience, imposter, questions, onFinish }: QuizProps) {
   const [index, setIndex] = useState(0)
   const [picked, setPicked] = useState<number | null>(null)
   const [score, setScore] = useState(0)
+  const [timeUp, setTimeUp] = useState(false)
+  // Player tapped the timer bar to stop the clock (e.g. a struggling player needs a moment).
+  const [held, setHeld] = useState(false)
+  const [bonus, setBonus] = useState<Bonus | null>(null)
   // Shuffle option order once per round so the right answer isn't always in the same spot.
   const [orders] = useState(() => questions.map(() => shuffle([0, 1, 2, 3])))
   const q = questions[index]
   const answered = picked !== null
+  const totalMs = ROUND_SECONDS[audience][imposter.difficulty] * 1000
 
-  function pick(i: number) {
-    if (answered) return
+  const timer = useRoundTimer({
+    totalMs,
+    graceMs: GRACE_SECONDS * 1000,
+    paused: answered || timeUp || held,
+    tickFrom: DANGER_SECONDS,
+    onStart: () => sound.play('timerStart'),
+    onTick: (s) => sound.play(s <= 5 ? 'tickUrgent' : 'tick'),
+    onExpire: () => {
+      setTimeUp(true)
+      sound.play('timeUp')
+    },
+  })
+
+  // When each question appeared, to measure answer speed.
+  const questionStart = useRef(0)
+  const bonusId = useRef(0)
+  useEffect(() => {
+    questionStart.current = performance.now()
+  }, [index])
+
+  // After "Time's up!" has been on screen for a moment, go to the results.
+  useEffect(() => {
+    if (!timeUp) return
+    const id = window.setTimeout(() => onFinish(score, 0), 2200)
+    return () => window.clearTimeout(id)
+  }, [timeUp, score, onFinish])
+
+  // `at` is the click's timestamp (same clock as performance.now()).
+  function pick(i: number, at: number) {
+    if (answered || timeUp) return
     setPicked(i)
-    if (i === q.answer) {
-      sound.play('correct')
-      setScore((s) => s + 1)
-    } else {
+    if (i !== q.answer) {
       sound.play('wrong')
+      return
+    }
+    sound.play('correct')
+    setScore((s) => s + 1)
+
+    // Speed bonus: fast correct answers earn extra time.
+    const secs = (at - questionStart.current) / 1000
+    const limits = SPEED_BONUS[audience]
+    const earned =
+      secs <= limits.lightning
+        ? { seconds: LIGHTNING_BONUS_SECONDS, label: 'Lightning fast!' }
+        : secs <= limits.quick
+          ? { seconds: QUICK_BONUS_SECONDS, label: 'Quick thinking!' }
+          : null
+    if (earned) {
+      timer.addTime(earned.seconds * 1000)
+      bonusId.current += 1
+      setBonus({ id: bonusId.current, ...earned })
+      window.setTimeout(() => sound.play('bonus'), 280)
     }
   }
 
@@ -135,8 +197,9 @@ export function QuizScreen({ imposter, questions, onFinish }: QuizProps) {
     if (index + 1 < questions.length) {
       setIndex(index + 1)
       setPicked(null)
+      setHeld(false)
     } else {
-      onFinish(score)
+      onFinish(score, Math.max(1, timer.stop()))
     }
   }
 
@@ -146,6 +209,30 @@ export function QuizScreen({ imposter, questions, onFinish }: QuizProps) {
         <span>{index + 1}</span>
         <span className="counter-dim"> / {questions.length}</span>
       </div>
+
+      <RoundTimer
+        visible={timer.started}
+        remainingMs={timer.remaining}
+        totalMs={totalMs}
+        paused={(answered || held) && !timeUp}
+        held={held}
+        onToggle={
+          answered || timeUp
+            ? undefined
+            : () => {
+                sound.play('click')
+                setHeld((h) => !h)
+              }
+        }
+        bonus={bonus}
+        onBonusDone={() => setBonus(null)}
+      />
+
+      {timeUp && (
+        <div className="timeup" role="alert">
+          <h2 className="display tone-lose">Time’s up!</h2>
+        </div>
+      )}
 
       <article className="card scenario" key={index}>
         <ImposterArt imposter={imposter} />
@@ -164,7 +251,12 @@ export function QuizScreen({ imposter, questions, onFinish }: QuizProps) {
           else if (answered && i === picked) state = ' is-wrong'
           else if (answered) state = ' is-dim'
           return (
-            <button key={i} className={`option${state}`} onClick={() => pick(i)} disabled={answered && i !== picked && i !== q.answer}>
+            <button
+              key={i}
+              className={`option${state}`}
+              onClick={(e) => pick(i, e.timeStamp)}
+              disabled={timeUp || (answered && i !== picked && i !== q.answer)}
+            >
               {opt}
             </button>
           )
@@ -180,7 +272,7 @@ export function QuizScreen({ imposter, questions, onFinish }: QuizProps) {
         )}
       </p>
 
-      <button className="btn-primary" disabled={!answered} onClick={next}>
+      <button className="btn-primary" disabled={!answered || timeUp} onClick={next}>
         {index + 1 < questions.length ? 'Next' : 'See Results'}
       </button>
     </section>
@@ -194,19 +286,22 @@ interface ResultProps {
   imposter: Imposter
   score: number
   total: number
+  timeLeftMs: number
   onPlayAgain: () => void
   onHome: () => void
 }
 
-export function ResultScreen({ name, imposter, score, total, onPlayAgain, onHome }: ResultProps) {
+export function ResultScreen({ name, imposter, score, total, timeLeftMs, onPlayAgain, onHome }: ResultProps) {
   const result =
     score === total
       ? { title: 'Good Game', tone: 'win', text: `Perfect score, ${name}! You beat ${imposter.name} and showed real cybersecurity awareness.` }
-      : score >= 2
+      : score === total - 1
         ? { title: 'Well Played', tone: 'win', text: `Nice work, ${name}! You beat ${imposter.name}. Just one slip, so check that tip and you'll be unstoppable.` }
-        : score === 1
-          ? { title: 'Nice Try', tone: 'mid', text: `You stopped ${imposter.name} once, ${name}. Brush up on the warning signs and try again!` }
-          : { title: 'Game Over', tone: 'lose', text: `${imposter.name} tricked you this time, ${name}. Every scammer leaves clues. Play again and spot them!` }
+        : score > total / 2
+          ? { title: 'Well Played', tone: 'win', text: `You beat ${imposter.name}, ${name}! A few tricks got past you, so review those tips to sharpen up.` }
+          : score >= 1
+            ? { title: 'Nice Try', tone: 'mid', text: `You stopped ${imposter.name} ${score === 1 ? 'once' : `${score} times`}, ${name}. Brush up on the warning signs and try again!` }
+            : { title: 'Game Over', tone: 'lose', text: `${imposter.name} tricked you this time, ${name}. Every scammer leaves clues. Play again and spot them!` }
 
   return (
     <section className="screen center">
@@ -214,6 +309,9 @@ export function ResultScreen({ name, imposter, score, total, onPlayAgain, onHome
       <div className="card score-box">
         {score} / {total}
       </div>
+      <p className={`time-chip${timeLeftMs <= 0 ? ' is-out' : ''}`}>
+        {timeLeftMs <= 0 ? '⏱ Time ran out' : `⏱ ${formatTime(timeLeftMs)} left on the clock`}
+      </p>
       <p className="lead narrow">{result.text}</p>
       <div className="row">
         <button className="btn-primary" onClick={onPlayAgain}>

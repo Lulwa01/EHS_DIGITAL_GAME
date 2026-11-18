@@ -13,6 +13,7 @@ export default function App() {
   const [name, setName] = useState('')
   const [imposter, setImposter] = useState<Imposter | null>(null)
   const [score, setScore] = useState(0)
+  const [timeLeftMs, setTimeLeftMs] = useState(0)
   const [round, setRound] = useState(0) // remounts the quiz on replay
   const [muted, setMuted] = useState(false)
 
@@ -73,10 +74,12 @@ export default function App() {
       {screen === 'quiz' && imposter && (
         <QuizScreen
           key={round}
+          audience={audience}
           imposter={imposter}
           questions={questions}
-          onFinish={(s) => {
+          onFinish={(s, left) => {
             setScore(s)
+            setTimeLeftMs(left)
             setScreen('result')
             sound.play(s === 0 ? 'lose' : 'win')
           }}
@@ -88,6 +91,7 @@ export default function App() {
           imposter={imposter}
           score={score}
           total={questions.length}
+          timeLeftMs={timeLeftMs}
           onPlayAgain={() => go('imposter')}
           onHome={() => go('home')}
         />
