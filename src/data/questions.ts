@@ -38,6 +38,30 @@ export const QUESTIONS: Record<Audience, Record<Difficulty, Question[]>> = {
         answer: 2,
         tip: 'Strong passwords are long and mix words, numbers and symbols. Never use your name or birthday.',
       },
+      {
+        scenario: 'Reem gets a friend request in her game from someone with no picture and a name she doesn’t recognise.',
+        prompt: 'What should Reem do?',
+        options: [
+          'Only accept friend requests from people she knows in real life.',
+          'Accept it. More friends means more fun.',
+          'Accept it and send them her phone number.',
+          'Accept it if they say they’re her age.',
+        ],
+        answer: 0,
+        tip: 'Online, anyone can pretend to be anyone. Only add people you actually know in real life.',
+      },
+      {
+        scenario: 'Someone in Faisal’s class keeps sending him mean messages online.',
+        prompt: 'What should Faisal do?',
+        options: [
+          'Send mean messages back.',
+          'Keep it a secret so nobody finds out.',
+          'Delete his account forever.',
+          'Don’t reply, save the messages and tell a trusted grown-up.',
+        ],
+        answer: 3,
+        tip: 'Never reply to bullies online. Keep the messages as proof and tell a parent or teacher. It’s not your fault.',
+      },
     ],
     normal: [
       {
@@ -77,6 +101,30 @@ export const QUESTIONS: Record<Audience, Record<Difficulty, Question[]>> = {
         ],
         answer: 1,
         tip: 'Downloads from random websites can hide viruses. Use the official app store and ask a grown-up first.',
+      },
+      {
+        scenario: 'Hassan’s game shows a shiny button: “Buy 5,000 gems for $49.99!” His dad’s card is already saved on the tablet.',
+        prompt: 'What should Hassan do?',
+        options: [
+          'Tap it. Dad won’t notice.',
+          'Ask his dad first and never buy things without permission.',
+          'Buy the gems, then tell his dad next week.',
+          'Ask a friend to tap it for him.',
+        ],
+        answer: 1,
+        tip: 'In-game shops spend real money. Always ask a parent before buying anything, even if a card is saved.',
+      },
+      {
+        scenario: 'Mariam wants to post a selfie standing in front of her house. Her house number and school badge are clear in the photo.',
+        prompt: 'What’s the smartest thing to do?',
+        options: [
+          'Post it. It’s a great photo!',
+          'Post it, but only for one day.',
+          'Take a new photo that doesn’t show her house number or school.',
+          'Post it with her full name so friends can find her.',
+        ],
+        answer: 2,
+        tip: 'Photos can show where you live or go to school. Check the background before you share anything.',
       },
     ],
     hard: [
@@ -118,6 +166,31 @@ export const QUESTIONS: Record<Audience, Record<Difficulty, Question[]>> = {
         ],
         answer: 1,
         tip: 'Real virus alerts never ask you to call a number. These scary screens are fake and want to trick you.',
+      },
+      {
+        scenario: 'A video promises free game skins:',
+        quote: 'Just copy this secret code and paste it into your browser while you’re logged in. Works 100%!',
+        prompt: 'What should you do?',
+        options: [
+          'Try it. The video has lots of views.',
+          'Try it on a friend’s account first.',
+          'Paste only half the code to be safe.',
+          'Don’t paste it. Codes like this can steal your whole account.',
+        ],
+        answer: 3,
+        tip: 'Never paste code someone sends you. These “secret codes” often hand your account to a scammer.',
+      },
+      {
+        scenario: 'Kids in Salma’s group chat are sharing a funny edited photo of a classmate. Everyone is laughing and asks her to send it on.',
+        prompt: 'What should Salma do?',
+        options: [
+          'Don’t share it, and tell a trusted adult what’s happening.',
+          'Share it, since everyone else already has.',
+          'Add a joke to it before she shares it.',
+          'Send it only to her best friend.',
+        ],
+        answer: 0,
+        tip: 'Sharing a mean photo is joining in on bullying. Stop it spreading and tell a grown-up who can help.',
       },
     ],
   },
@@ -162,6 +235,30 @@ export const QUESTIONS: Record<Audience, Record<Difficulty, Question[]>> = {
         answer: 1,
         tip: 'A code you didn’t request means someone is trying to get into your account. Never share it, and change your password.',
       },
+      {
+        scenario: 'Jana’s phone keeps saying “Software update available”. She always taps “Remind me later”.',
+        prompt: 'Why should she install it?',
+        options: [
+          'Updates only change the emoji.',
+          'Updates fix security holes that hackers can use.',
+          'Updates make the battery bigger.',
+          'She shouldn’t. Updates are always viruses.',
+        ],
+        answer: 1,
+        tip: 'Official updates patch weaknesses attackers already know about. Install them soon, from your device’s settings.',
+      },
+      {
+        scenario: 'Saif is on holiday and wants to post a live story tagging the exact hotel he’s at right now.',
+        prompt: 'What’s the safest choice?',
+        options: [
+          'Post it live with the location so friends can visit.',
+          'Post it and make his account public for more views.',
+          'Share his room number too.',
+          'Wait and post the photos after he leaves, without the live location.',
+        ],
+        answer: 3,
+        tip: 'Live locations tell strangers exactly where you are, and that your home is empty. Post later instead.',
+      },
     ],
     normal: [
       {
@@ -202,6 +299,32 @@ export const QUESTIONS: Record<Audience, Record<Difficulty, Question[]>> = {
         answer: 2,
         tip: 'Check app permissions. If an app wants more than it needs, it may be collecting your data.',
       },
+      {
+        scenario: 'Someone online messages Rashid:',
+        quote: 'I have an embarrassing screenshot of you. Pay me $50 or I’ll send it to your whole school.',
+        prompt: 'What should Rashid do?',
+        options: [
+          'Pay quickly so it goes away.',
+          'Beg them not to post it.',
+          'Don’t pay. Save the evidence, block and report them, and tell a trusted adult.',
+          'Delete all his accounts and tell no one.',
+        ],
+        answer: 2,
+        tip: 'Paying blackmailers almost always leads to more demands. Keep the evidence and get help. You are not in trouble.',
+      },
+      {
+        scenario: 'Mona sees a post:',
+        quote: 'Easy money for students! Get $500/week just for letting money pass through your bank account. 💸',
+        prompt: 'What’s really going on?',
+        options: [
+          'It’s a scam that uses her account to move stolen money, and that’s a crime.',
+          'It’s a real part-time job.',
+          'It’s fine as long as she keeps her share small.',
+          'It’s safe if the account has a nice profile picture.',
+        ],
+        answer: 0,
+        tip: 'Being a “money mule” is illegal, even if you didn’t know. Never let anyone move money through your account.',
+      },
     ],
     hard: [
       {
@@ -240,6 +363,30 @@ export const QUESTIONS: Record<Audience, Record<Difficulty, Question[]>> = {
         ],
         answer: 1,
         tip: 'QR codes can lead to fake pages. Check the address and never enter a password for a different account.',
+      },
+      {
+        scenario: 'A very realistic video of a teacher saying something awful is going around. A classmate admits they made it with an AI app.',
+        prompt: 'What should you do?',
+        options: [
+          'Share it. Everyone knows it’s a joke.',
+          'Don’t share it, and report it to the platform and the school.',
+          'Make your own version.',
+          'Share it but write “fake” in the caption.',
+        ],
+        answer: 1,
+        tip: 'Deepfakes can wreck someone’s reputation, and making or sharing them can break the law. Report, don’t spread.',
+      },
+      {
+        scenario: 'Lina’s account recovery question is “What was your first pet’s name?” She has posted about her cat Simba many times.',
+        prompt: 'What should she do?',
+        options: [
+          'Nothing. Nobody reads old posts.',
+          'Change the answer to “simba” in lowercase.',
+          'Delete her cat photos.',
+          'Use a made-up answer saved in a password manager, and turn on 2FA.',
+        ],
+        answer: 3,
+        tip: 'Security answers are easy to guess from your posts. Treat them like extra passwords, not real facts.',
       },
     ],
   },
@@ -284,6 +431,30 @@ export const QUESTIONS: Record<Audience, Record<Difficulty, Question[]>> = {
         answer: 2,
         tip: 'A “.pdf.exe” is a program pretending to be a document. Unexpected attachments are a top malware route.',
       },
+      {
+        scenario: 'You step away from your desk for a coffee. Your laptop is open with your email and files on screen.',
+        prompt: 'What should you have done?',
+        options: [
+          'Nothing. You’ll only be gone five minutes.',
+          'Turn the screen brightness down.',
+          'Lock your screen before leaving (e.g. Windows + L).',
+          'Ask a colleague to glance at it now and then.',
+        ],
+        answer: 2,
+        tip: 'An unlocked computer is an open door. Lock it every time you step away, even briefly.',
+      },
+      {
+        scenario: 'You find a USB stick labelled “Salaries 2026” in the office car park.',
+        prompt: 'What should you do?',
+        options: [
+          'Hand it to IT or security without plugging it in.',
+          'Plug it in to find the owner.',
+          'Plug it into a home computer instead.',
+          'Open just one file to check it’s legit.',
+        ],
+        answer: 0,
+        tip: 'Attackers leave tempting USB drives as bait. Plugging one in can infect your device instantly.',
+      },
     ],
     normal: [
       {
@@ -324,6 +495,31 @@ export const QUESTIONS: Record<Audience, Record<Difficulty, Question[]>> = {
         answer: 2,
         tip: 'No legitimate investment guarantees high returns. Celebrity endorsements in ads are often faked.',
       },
+      {
+        scenario: 'Late at night your phone shows sign-in approval requests again and again. You aren’t trying to log in.',
+        prompt: 'What should you do?',
+        options: [
+          'Approve one so the notifications stop.',
+          'Deny them, change your password and report it to IT.',
+          'Turn your phone off until morning.',
+          'Ignore them. They’ll go away.',
+        ],
+        answer: 1,
+        tip: 'Repeated prompts mean someone has your password and hopes you’ll tap “Approve” out of tiredness.',
+      },
+      {
+        scenario: 'You’re selling a sofa online for $300. A buyer sends a “payment” of $800 and writes:',
+        quote: 'Oops, I overpaid! Please send the extra $500 back to my mover.',
+        prompt: 'What’s happening?',
+        options: [
+          'An honest mistake. Refund it quickly.',
+          'A generous buyer. Keep the extra.',
+          'Send back $250 and split the difference.',
+          'An overpayment scam. The payment will bounce and your $500 will be gone.',
+        ],
+        answer: 3,
+        tip: 'Fake or reversible payments followed by a refund request are a classic scam. Wait until funds truly clear, then decline.',
+      },
     ],
     hard: [
       {
@@ -363,6 +559,30 @@ export const QUESTIONS: Record<Audience, Record<Difficulty, Question[]>> = {
         ],
         answer: 2,
         tip: 'Read the domain right before the first single “/”. Only “…examplebank.com” at the end belongs to the bank.',
+      },
+      {
+        scenario: 'A “shared document” link takes you to your real work login page. After signing in, an app called “DocViewer Pro” asks for permission to read and send email as you.',
+        prompt: 'What should you do?',
+        options: [
+          'Accept. The login page was genuine.',
+          'Accept, then remove it later.',
+          'Decline, and report the email and the app to IT.',
+          'Accept only if the app has a nice logo.',
+        ],
+        answer: 2,
+        tip: 'Consent phishing uses the real login page, then tricks you into giving a malicious app access. Check what an app asks for.',
+      },
+      {
+        scenario: 'A website shows a padlock icon next to its address.',
+        prompt: 'What does the padlock actually tell you?',
+        options: [
+          'The connection is encrypted, but the site could still be a scam.',
+          'The site has been checked and is trustworthy.',
+          'The site belongs to a bank.',
+          'The site can’t contain malware.',
+        ],
+        answer: 0,
+        tip: 'Scam sites get padlocks too. The padlock protects the connection, not you from who is on the other end.',
       },
     ],
   },
