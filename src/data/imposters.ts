@@ -1,10 +1,22 @@
-import type { Imposter } from './types'
-import antImg from '../assets/imposters/ant.png'
+import type { Difficulty, Imposter } from './types'
 import spiderImg from '../assets/imposters/spider.png'
-import mosquitoImg from '../assets/imposters/mosquito.png'
 
-export const IMPOSTERS: Imposter[] = [
-  { difficulty: 'easy', name: 'Phishy Phil', scammed: 128, image: antImg, motion: 'sway' },
-  { difficulty: 'normal', name: 'Captain Clickbait', scammed: 2_450, image: spiderImg, motion: 'bob' },
-  { difficulty: 'hard', name: 'The Shadow Admin', scammed: 58_900, image: mosquitoImg, motion: 'hover' },
-]
+/** The one imposter the player faces. Change the name, tagline and stats here. */
+export const SPIDER = {
+  name: 'Spinner the Scam Spider',
+  tagline: 'He traps people with fake prizes and sneaky links.',
+  scammed: 58_900,
+  image: spiderImg,
+  motion: 'bob',
+} as const
+
+export const LEVEL_LABEL: Record<Difficulty, string> = { easy: 'Easy', normal: 'Normal', hard: 'Hard' }
+
+/** The spider at each difficulty (used by the quiz and results screens). */
+export const IMPOSTERS: Imposter[] = (['easy', 'normal', 'hard'] as const).map((difficulty) => ({
+  difficulty,
+  name: SPIDER.name,
+  scammed: SPIDER.scammed,
+  image: SPIDER.image,
+  motion: SPIDER.motion,
+}))

@@ -1,4 +1,5 @@
 import { DANGER_SECONDS, formatTime } from '../data/timer'
+import { useT } from '../i18n'
 
 export interface Bonus {
   id: number
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export function RoundTimer({ visible, remainingMs, totalMs, paused, held, onToggle, bonus, onBonusDone }: Props) {
+  const t = useT()
   const pct = Math.min(100, (remainingMs / totalMs) * 100)
   const secs = Math.ceil(remainingMs / 1000)
   const level = secs <= DANGER_SECONDS ? 'danger' : pct <= 50 ? 'warn' : 'ok'
@@ -33,7 +35,7 @@ export function RoundTimer({ visible, remainingMs, totalMs, paused, held, onTogg
           role={onToggle ? 'button' : undefined}
           tabIndex={onToggle ? 0 : undefined}
           aria-pressed={onToggle ? held : undefined}
-          aria-label={onToggle ? (held ? 'Resume timer' : 'Pause timer') : undefined}
+          aria-label={onToggle ? (held ? t.resumeTimer : t.pauseTimer) : undefined}
           onKeyDown={
             onToggle
               ? (e) => {
@@ -51,14 +53,14 @@ export function RoundTimer({ visible, remainingMs, totalMs, paused, held, onTogg
                 <circle cx="12" cy="13" r="8" />
                 <path d="M12 9v4l2.5 2M9.5 2.5h5" />
               </svg>
-              {paused ? 'Paused' : 'Time left'}
+              {paused ? t.paused : t.timeLeft}
             </span>
             <span className="timer-time">{formatTime(remainingMs)}</span>
           </div>
           <div
             className="timer-track"
             role="progressbar"
-            aria-label="Time left in this round"
+            aria-label={t.timeLeftInRound}
             aria-valuemin={0}
             aria-valuemax={Math.ceil(totalMs / 1000)}
             aria-valuenow={secs}
@@ -70,7 +72,7 @@ export function RoundTimer({ visible, remainingMs, totalMs, paused, held, onTogg
       )}
       {bonus && (
         <span className="bonus-chip" key={bonus.id} onAnimationEnd={onBonusDone} role="status">
-          ⚡ +{bonus.seconds}s {bonus.label}
+          {t.bonus(bonus.seconds, bonus.label)}
         </span>
       )}
     </div>

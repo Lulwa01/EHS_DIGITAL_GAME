@@ -1,18 +1,20 @@
 import type { Imposter } from '../data/types'
+import { useT } from '../i18n'
 
 /** Shows the imposter's image, or a hooded silhouette until the art is ready. */
 export function ImposterArt({ imposter }: { imposter: Imposter }) {
+  const name = useT().spiderName
   return (
     <div className="imposter-art">
       {imposter.image ? (
         <img
           src={imposter.image}
-          alt={imposter.name}
+          alt={name}
           className={imposter.motion ? `idle-${imposter.motion}` : undefined}
           draggable={false}
         />
       ) : (
-        <svg viewBox="0 0 120 120" role="img" aria-label={imposter.name}>
+        <svg viewBox="0 0 120 120" role="img" aria-label={name}>
           <defs>
             <linearGradient id="hood" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" stopColor="#2a2340" />

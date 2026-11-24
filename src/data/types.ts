@@ -1,4 +1,4 @@
-export type Audience = 'kids' | 'teens' | 'adults'
+export type Audience = 'kids' | 'adults'
 export type Difficulty = 'easy' | 'normal' | 'hard'
 
 export interface Question {
@@ -29,6 +29,5 @@ export interface Imposter {
 
 export const AUDIENCES: { id: Audience; label: string }[] = [
   { id: 'kids', label: 'Kids Level' },
-  { id: 'teens', label: 'Teens Level' },
   { id: 'adults', label: 'Adults Level' },
 ]

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AUDIENCES, type Audience, type Imposter, type Question } from '../data/types'
-import { IMPOSTERS } from '../data/imposters'
+import { IMPOSTERS, SPIDER } from '../data/imposters'
+import { useLang, useT } from '../i18n'
 import {
   DANGER_SECONDS,
   formatTime,
@@ -15,14 +16,20 @@ import { ImposterArt } from './ImposterArt'
 import { RoundTimer, type Bonus } from './RoundTimer'
 import { ShieldMeter, type ShieldState } from './ShieldMeter'
 import { sound } from '../audio/sound'
+import titleLogo from '../assets/title-logo.png'
+import titleLogoAr from '../assets/title-logo-ar.png'
 /* ---------- Home: choose audience ---------- */
 
 export function HomeScreen({ onStart }: { onStart: (a: Audience) => void }) {
   const [audience, setAudience] = useState<Audience | null>(null)
+  const lang = useLang()
+  const t = useT()
   return (
-    <section className="screen center">
-      <h1 className="display title-xl">Cyber Sleuth</h1>
-      <p className="lead">Beat the imposter and stay cyber-safe. Choose your level to start!</p>
+    <section className="screen center home">
+      <h1 className={`title-logo${lang === 'ar' ? ' is-ar' : ''}`}>
+        <img src={lang === 'ar' ? titleLogoAr : titleLogo} alt={t.logoAlt} draggable={false} />
+      </h1>
+      <p className="lead">{t.tagline}</p>
       <div className="row">
         {AUDIENCES.map((a) => (
           <button
@@ -34,12 +41,12 @@ export function HomeScreen({ onStart }: { onStart: (a: Audience) => void }) {
               setAudience(a.id)
             }}
           >
-            {a.label}
+            {t.audience[a.id]}
           </button>
         ))}
       </div>
       <button className="btn-primary" disabled={!audience} onClick={() => audience && onStart(audience)}>
-        Start
+        {t.start}
       </button>
     </section>
   )
@@ -49,6 +56,7 @@ export function HomeScreen({ onStart }: { onStart: (a: Audience) => void }) {
 
 export function NameScreen({ initial, onNext }: { initial: string; onNext: (name: string) => void }) {
   const [name, setName] = useState(initial)
+  const t = useT()
   const trimmed = name.trim()
   return (
     <form
@@ -58,47 +66,58 @@ export function NameScreen({ initial, onNext }: { initial: string; onNext: (name
         if (trimmed) onNext(trimmed)
       }}
     >
-      <h1 className="display title-md">Enter your name</h1>
+      <h1 className="display title-md">{t.enterName}</h1>
       <input
         className="text-input"
         value={name}
         maxLength={20}
         autoFocus
-        placeholder="Enter your name or a nickname"
-        aria-label="Your name or nickname"
+        dir="auto"
+        placeholder={t.namePlaceholder}
+        aria-label={t.nameAria}
         onChange={(e) => setName(e.target.value)}
       />
       <button className="btn-primary" type="submit" disabled={!trimmed}>
-        Next
+        {t.next}
       </button>
     </form>
   )
 }
 
-/* ---------- Choose an imposter (difficulty) ---------- */
+/* ---------- Choose an imposter: meet the spider, then pick a level ---------- */
 
-const LABEL = { easy: 'Easy', normal: 'Normal', hard: 'Hard' } as const
+interface ImposterScreenProps {
+  audience: Audience
+  onSelect: (imp: Imposter) => void
+}
 
-export function ImposterScreen({ onSelect }: { onSelect: (imp: Imposter) => void }) {
+export function ImposterScreen({ audience, onSelect }: ImposterScreenProps) {
+  const t = useT()
   return (
     <section className="screen center">
-      <h1 className="display title-md">Challenge an Imposter</h1>
-      <p className="lead">Select an imposter to defeat. Difficulty goes from left to right.</p>
-      <div className="cards">
-        {IMPOSTERS.map((imp) => (
-          <article key={imp.difficulty} className="card imposter-card">
-            <span className={`badge badge-${imp.difficulty}`}>{LABEL[imp.difficulty]}</span>
-            <ImposterArt imposter={imp} />
-            <h2 className="imposter-name">{imp.name}</h2>
-            <p className="scammed">
-              <strong>{imp.scammed.toLocaleString()}</strong> people scammed
-            </p>
-            <button className="btn-outline btn-sm" onClick={() => onSelect(imp)}>
-              Select
-            </button>
-          </article>
-        ))}
-      </div>
+      <h1 className="display title-md">{t.chooseDifficulty}</h1>
+
+      <article className="card villain">
+        <div className="villain-art">
+          <img src={SPIDER.image} alt={t.spiderName} className={`idle-${SPIDER.motion}`} draggable={false} />
+        </div>
+        <div className="villain-info">
+          <h2 className="villain-name">{t.spiderName}</h2>
+          <p className="villain-tagline">{t.spiderTagline}</p>
+          <p className="scammed">
+            <strong>{SPIDER.scammed.toLocaleString('en-US')}</strong> {t.peopleScammed}
+          </p>
+
+          <div className="levels" role="group" aria-label={t.chooseLevel}>
+            {IMPOSTERS.map((imp) => (
+              <button key={imp.difficulty} className={`level badge-${imp.difficulty}`} onClick={() => onSelect(imp)}>
+                <span>{t.level[imp.difficulty]}</span>
+                <span className="level-time">⏱ {formatTime(ROUND_SECONDS[audience][imp.difficulty] * 1000)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </article>
     </section>
   )
 }
@@ -126,6 +145,7 @@ interface QuizProps {
 }
 
 export function QuizScreen({ audience, imposter, questions, frozen = false, onFinish }: QuizProps) {
+  const t = useT()
   const [index, setIndex] = useState(0)
   const [picked, setPicked] = useState<number | null>(null)
   const [score, setScore] = useState(0)
@@ -185,9 +205,9 @@ export function QuizScreen({ audience, imposter, questions, frozen = false, onFi
     const limits = SPEED_BONUS[audience]
     const earned =
       secs <= limits.lightning
-        ? { seconds: LIGHTNING_BONUS_SECONDS, label: 'Lightning fast!' }
+        ? { seconds: LIGHTNING_BONUS_SECONDS, label: t.lightning }
         : secs <= limits.quick
-          ? { seconds: QUICK_BONUS_SECONDS, label: 'Quick thinking!' }
+          ? { seconds: QUICK_BONUS_SECONDS, label: t.quick }
           : null
     if (earned) {
       timer.addTime(earned.seconds * 1000)
@@ -215,7 +235,7 @@ export function QuizScreen({ audience, imposter, questions, frozen = false, onFi
           r === true ? 'earned' : r === false ? 'missed' : i === index && !timeUp ? 'current' : 'upcoming',
         )}
       />
-      <p className="sr-only" aria-live="polite">{`Question ${index + 1} of ${questions.length}`}</p>
+      <p className="sr-only" aria-live="polite">{t.questionOf(index + 1, questions.length)}</p>
 
       <RoundTimer
         visible={timer.started}
@@ -237,7 +257,7 @@ export function QuizScreen({ audience, imposter, questions, frozen = false, onFi
 
       {timeUp && (
         <div className="timeup" role="alert">
-          <h2 className="display tone-lose">Time’s up!</h2>
+          <h2 className="display tone-lose">{t.timesUp}</h2>
         </div>
       )}
 
@@ -245,12 +265,12 @@ export function QuizScreen({ audience, imposter, questions, frozen = false, onFi
         <ImposterArt imposter={imposter} />
         <div className="scenario-text">
           <p>{q.scenario}</p>
-          {q.quote && <p className="quote">“{q.quote}”</p>}
+          {q.quote && <p className="quote">{t.quoted(q.quote)}</p>}
           <p className="prompt">{q.prompt}</p>
         </div>
       </article>
 
-      <div className="options" role="group" aria-label="Answers">
+      <div className="options" role="group" aria-label={t.answers}>
         {orders[index].map((i) => {
           const opt = q.options[i]
           let state = ''
@@ -273,14 +293,14 @@ export function QuizScreen({ audience, imposter, questions, frozen = false, onFi
       <p className={`tip${answered ? ' is-visible' : ''}`} aria-live="polite">
         {answered && (
           <>
-            <strong>{picked === q.answer ? 'Correct! ' : 'Not quite. '}</strong>
+            <strong>{picked === q.answer ? t.correct : t.notQuite}</strong>
             {q.tip}
           </>
         )}
       </p>
 
       <button className="btn-primary" disabled={!answered || timeUp} onClick={next}>
-        {index + 1 < questions.length ? 'Next' : 'See Results'}
+        {index + 1 < questions.length ? t.next : t.seeResults}
       </button>
     </section>
   )
@@ -290,7 +310,6 @@ export function QuizScreen({ audience, imposter, questions, frozen = false, onFi
 
 interface ResultProps {
   name: string
-  imposter: Imposter
   score: number
   total: number
   timeLeftMs: number
@@ -298,17 +317,10 @@ interface ResultProps {
   onHome: () => void
 }
 
-export function ResultScreen({ name, imposter, score, total, timeLeftMs, onPlayAgain, onHome }: ResultProps) {
-  const result =
-    score === total
-      ? { title: 'Good Game', tone: 'win', text: `Perfect score, ${name}! You beat ${imposter.name} and showed real cybersecurity awareness.` }
-      : score === total - 1
-        ? { title: 'Well Played', tone: 'win', text: `Nice work, ${name}! You beat ${imposter.name}. Just one slip, so check that tip and you'll be unstoppable.` }
-        : score > total / 2
-          ? { title: 'Well Played', tone: 'win', text: `You beat ${imposter.name}, ${name}! A few tricks got past you, so review those tips to sharpen up.` }
-          : score >= 1
-            ? { title: 'Nice Try', tone: 'mid', text: `You stopped ${imposter.name} ${score === 1 ? 'once' : `${score} times`}, ${name}. Brush up on the warning signs and try again!` }
-            : { title: 'Game Over', tone: 'lose', text: `${imposter.name} tricked you this time, ${name}. Every scammer leaves clues. Play again and spot them!` }
+export function ResultScreen({ name, score, total, timeLeftMs, onPlayAgain, onHome }: ResultProps) {
+  const t = useT()
+  // One title per score (every level has 5 questions). Texts live in i18n.ts.
+  const result = t.results[Math.round((score / Math.max(total, 1)) * 5)]
 
   return (
     <section className="screen center">
@@ -317,19 +329,20 @@ export function ResultScreen({ name, imposter, score, total, timeLeftMs, onPlayA
         <ShieldMeter
           size="lg"
           staggerMs={220}
+          colorByResult
           states={Array.from({ length: total }, (_, i) => (i < score ? 'earned' : 'missed'))}
         />
       </div>
       <p className={`time-chip${timeLeftMs <= 0 ? ' is-out' : ''}`}>
-        {timeLeftMs <= 0 ? '⏱ Time ran out' : `⏱ ${formatTime(timeLeftMs)} left on the clock`}
+        {timeLeftMs <= 0 ? t.timeRanOut : t.timeLeftOnClock(formatTime(timeLeftMs))}
       </p>
-      <p className="lead narrow">{result.text}</p>
+      <p className="lead narrow">{result.text(name, t.spiderName)}</p>
       <div className="row">
         <button className="btn-primary" onClick={onPlayAgain}>
-          Play Again
+          {t.playAgain}
         </button>
         <button className="btn-outline" onClick={onHome}>
-          Home
+          {t.home}
         </button>
       </div>
     </section>

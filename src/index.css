@@ -33,6 +33,36 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* ---------- Arabic (set on <html lang="ar" dir="rtl"> by App.tsx) ---------- */
+/* The display and body fonts have no Arabic letters, so use Cairo throughout. */
+:root[lang='ar'] {
+  --font-display: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+  --font-body: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+}
+/* Letter-spacing breaks joined Arabic letters; Arabic also needs taller lines. */
+:root[lang='ar'] .display {
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+:root[lang='ar'] .lead,
+:root[lang='ar'] .scenario-text,
+:root[lang='ar'] .option {
+  line-height: 1.6;
+}
+/* Arabic logo is taller than the English one, so keep it a bit narrower */
+.title-logo.is-ar {
+  width: min(640px, 100%);
+}
+[dir='rtl'] .level:hover {
+  transform: translateX(-4px);
+}
+/* Keep times, codes and web addresses reading left-to-right inside Arabic text */
+[dir='rtl'] .timer-time,
+[dir='rtl'] .level-time {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -50,6 +80,22 @@ body::before {
   inset: 0;
   z-index: -1;
   background: var(--bg) url('./assets/bg.jpg') center / cover no-repeat;
+}
+
+/* Large "B" brand mark tucked into the bottom-left corner, partly off-screen.
+   The PNG is used as a mask so we control its colour/strength here. */
+body::after {
+  content: '';
+  position: fixed;
+  z-index: -1;
+  left: max(-26vmin, -118px);
+  bottom: max(-30vmin, -210px);
+  width: max(85vmin, 520px);
+  aspect-ratio: 1400 / 1384;
+  background: rgba(124, 84, 240, 0.05);
+  -webkit-mask: url('./assets/b-mark.png') center / contain no-repeat;
+  mask: url('./assets/b-mark.png') center / contain no-repeat;
+  pointer-events: none;
 }
 
 button,
@@ -70,16 +116,65 @@ button {
   flex-direction: column;
   max-width: 1200px;
   margin: 0 auto;
-  padding: clamp(16px, 4vw, 48px) clamp(16px, 6vw, 96px);
+  padding: clamp(10px, 2.5vh, 28px) clamp(16px, 6vw, 96px);
 }
 
+/* left buttons | logo (true centre) | right buttons */
 .topbar {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
 }
-.topbar-right {
+.topbar-group {
   display: flex;
   gap: 14px;
+}
+.topbar-end {
+  grid-column: 3;
+  justify-self: end;
+}
+
+/* Company logo, bottom left (home page only) */
+.footer {
+  display: flex;
+  justify-content: flex-start;
+}
+.brand {
+  height: 38px;
+  width: auto;
+  max-width: 100%;
+  user-select: none;
+}
+
+/* Language button: shows the Arabic letter "ع" */
+.lang-btn span {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, 'Noto Sans Arabic', sans-serif;
+  margin-top: -10px;
+  margin-right: 1px;
+}
+/* "EN" label shown on the language button while in Arabic */
+.lang-btn span.lang-en {
+  font-family: 'Lexend', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+/* Not available yet: dimmed, no hover lift */
+.icon-btn.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.icon-btn.is-disabled:hover,
+.icon-btn.is-disabled:active {
+  transform: none;
+  border-color: rgba(169, 127, 243, 0.6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
 /* ---------- How to Play popup ---------- */
@@ -117,7 +212,7 @@ button {
 .help-x {
   position: absolute;
   top: 14px;
-  right: 14px;
+  inset-inline-end: 14px;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -275,19 +370,23 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-block: 24px;
+  padding-block: 8px;
 }
 
 .screen {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: clamp(12px, 2.2vh, 20px);
   animation: fade-in 0.4s ease both;
 }
 .screen.center {
   align-items: center;
   text-align: center;
+}
+/* Home page has little content, so it gets more breathing room */
+.screen.home {
+  gap: clamp(24px, 4vh, 40px);
 }
 
 @keyframes fade-in {
@@ -321,6 +420,17 @@ button {
 .title-xl {
   font-size: clamp(2.6rem, 9vw, 6.4rem);
 }
+/* Game logo image used as the home-screen title */
+.title-logo {
+  margin: 0;
+  width: min(760px, 100%);
+  line-height: 0;
+}
+.title-logo img {
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
 .title-md {
   font-size: clamp(1.8rem, 4.5vw, 3rem);
 }
@@ -346,7 +456,7 @@ button {
 .btn-outline,
 .btn-primary {
   min-width: 190px;
-  padding: 18px 32px;
+  padding: 14px 32px;
   border-radius: var(--radius);
   font-size: 1.3rem;
   transition: transform 0.15s, box-shadow 0.2s, border-color 0.2s, opacity 0.2s;
@@ -417,32 +527,47 @@ input:focus-visible {
   backdrop-filter: blur(6px);
 }
 
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 40px;
-  width: 100%;
-  margin-top: 16px;
-}
+/* ---------- Choose an Imposter: villain profile + levels ---------- */
 
-.imposter-card {
-  position: relative;
-  padding: 24px;
+.villain {
+  width: 100%;
+  max-width: 820px;
+  display: grid;
+  grid-template-columns: minmax(200px, 320px) 1fr;
+  gap: clamp(20px, 4vw, 40px);
+  align-items: center;
+  padding: clamp(18px, 3vw, 32px);
+  text-align: start;
+}
+.villain-art {
+  aspect-ratio: 1;
+  border-radius: 14px;
+  background: radial-gradient(circle at 50% 45%, #2f2170 0%, #170f3d 75%);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.villain-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8%;
+  box-sizing: border-box;
+}
+.villain-info {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  text-align: left;
-  transition: border-color 0.2s, transform 0.2s;
+  gap: 8px;
 }
-.imposter-card:hover {
-  border-color: var(--border);
-  transform: translateY(-4px);
+.villain-tagline {
+  margin: 0;
+  font-weight: 300;
+  line-height: 1.45;
 }
-.imposter-name {
-  margin: 8px 0 0;
-  font-size: 1.4rem;
-  font-weight: 500;
+.villain-name {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  font-weight: 600;
 }
 .scammed {
   margin: 0;
@@ -453,16 +578,37 @@ input:focus-visible {
   color: #ff6f9c;
   font-weight: 600;
 }
-
-.badge {
-  position: absolute;
-  top: -16px;
-  right: -12px;
-  padding: 6px 18px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  color: #fff;
+/* Level buttons inside the spider card (colours come from .badge-easy/normal/hard) */
+.levels {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
+.level {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: none;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 600;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2);
+  transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
+}
+.level:hover {
+  transform: translateX(4px);
+  filter: brightness(1.1);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2), 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+.level-time {
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
 .badge-easy {
   background: linear-gradient(180deg, #5f9bff, #3d6af0);
 }
@@ -477,7 +623,8 @@ input:focus-visible {
   width: 100%;
   aspect-ratio: 3 / 2;
   border-radius: 12px;
-  background: #170f3d;
+  /* background: #170f3d; */
+  background: #251a5a;
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -609,6 +756,17 @@ input:focus-visible {
   animation: shield-burst 0.7s ease-out both;
   animation-delay: calc(var(--delay, 0ms) + 120ms);
 }
+/* Results screen: correct answers glow green, wrong answers show solid red */
+.shields-colored .shield.is-earned svg {
+  filter: drop-shadow(0 0 10px rgba(47, 191, 106, 0.65));
+}
+.shields-colored .shield.is-earned::after {
+  border-color: #2fbf6a;
+}
+.shields-colored .shield.is-missed svg {
+  opacity: 1;
+  filter: drop-shadow(0 0 8px rgba(224, 59, 75, 0.55));
+}
 /* Wrong answer: stays dim, quick shake */
 .shield.is-missed svg {
   animation: shield-miss 0.45s ease both;
@@ -707,8 +865,8 @@ input:focus-visible {
 .scenario {
   display: grid;
   grid-template-columns: minmax(160px, 260px) 1fr;
-  gap: 40px;
-  padding: 24px;
+  gap: 32px;
+  padding: 18px 24px;
   align-items: center;
   animation: fade-in 0.35s ease both;
 }
@@ -725,27 +883,25 @@ input:focus-visible {
   font-weight: 600;
 }
 .scenario-text .prompt {
-  margin: 20px 0 0;
+  margin: 14px 0 0;
 }
 
 .options {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px 36px;
+  gap: 12px 36px;
 }
 .option {
-  text-align: left;
+  text-align: start;
   padding: 14px 18px;
   border-radius: 14px;
   background: rgba(8, 8, 26, 0.85);
-  border: 1px solid var(--border);
+  /* Touch screen: the glowing border is always on, no hover state needed */
+  border: 1px solid #a28cff;
+  box-shadow: 0 0 14px rgba(124, 58, 237, 0.35);
   font-size: 1rem;
   font-weight: 300;
   transition: border-color 0.2s, background 0.2s, opacity 0.2s, box-shadow 0.2s;
-}
-.option:hover:not(:disabled) {
-  border-color: #a28cff;
-  box-shadow: 0 0 14px rgba(124, 58, 237, 0.35);
 }
 .option.is-correct {
   background: var(--correct-bg);
@@ -929,7 +1085,7 @@ input:focus-visible {
 
 .bonus-chip {
   position: absolute;
-  right: 0;
+  inset-inline-end: 0;
   top: -30px;
   padding: 6px 14px;
   border-radius: 999px;
@@ -1000,7 +1156,7 @@ input:focus-visible {
 /* ---------- Result ---------- */
 
 .score-box {
-  padding: 28px clamp(20px, 5vw, 48px);
+  padding: 20px clamp(20px, 5vw, 48px);
 }
 
 /* ---------- Mobile ---------- */
@@ -1010,9 +1166,27 @@ input:focus-visible {
     width: 48px;
     height: 48px;
   }
-  .topbar-right {
+  .topbar-group {
     gap: 10px;
-  }  .icon-btn svg {
+  }
+  .lang-btn span {
+    font-size: 24px;
+  }
+  .topbar {
+    gap: 8px;
+  }
+  .villain {
+    grid-template-columns: 1fr;
+  }
+  .villain-art {
+    max-width: 240px;
+    width: 100%;
+    justify-self: center;
+  }
+  .brand {
+    height: 22px;
+  }
+  .icon-btn svg {
     width: 25px;
     height: 25px;
   }

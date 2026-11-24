@@ -10,7 +10,6 @@ export const GRACE_SECONDS = 10
  */
 export const ROUND_SECONDS: Record<Audience, Record<Difficulty, number>> = {
   kids: { easy: 200, normal: 175, hard: 150 },
-  teens: { easy: 150, normal: 135, hard: 115 },
   adults: { easy: 125, normal: 110, hard: 90 },
 }
 
@@ -20,7 +19,6 @@ export const ROUND_SECONDS: Record<Audience, Record<Difficulty, number>> = {
  */
 export const SPEED_BONUS: Record<Audience, { lightning: number; quick: number }> = {
   kids: { lightning: 14, quick: 24 },
-  teens: { lightning: 10, quick: 18 },
   adults: { lightning: 10, quick: 18 },
 }
 export const LIGHTNING_BONUS_SECONDS = 10
