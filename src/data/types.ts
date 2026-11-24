@@ -8,12 +8,12 @@ export interface Question {
   quote?: string
   /** The actual question, e.g. "What should Ali do?" */
   prompt: string
-  /** Exactly four options. */
-  options: [string, string, string, string]
-  /** Index (0-3) of the correct option. */
+  /** The answer choices (kids have 4, adults have 3). Shown in random order. */
+  options: string[]
+  /** Index of the correct option in `options` (0 = first). */
   answer: number
-  /** Short lesson shown after the player answers. */
-  tip: string
+  /** Optional short lesson shown after the player answers. */
+  tip?: string
 }
 
 export interface Imposter {

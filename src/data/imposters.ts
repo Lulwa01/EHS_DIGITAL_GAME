@@ -10,7 +10,7 @@ export const SPIDER = {
   motion: 'bob',
 } as const
 
-export const LEVEL_LABEL: Record<Difficulty, string> = { easy: 'Easy', normal: 'Normal', hard: 'Hard' }
+export const LEVEL_LABEL: Record<Difficulty, string> = { easy: 'Easy', normal: 'Medium', hard: 'Hard' }
 
 /** The spider at each difficulty (used by the quiz and results screens). */
 export const IMPOSTERS: Imposter[] = (['easy', 'normal', 'hard'] as const).map((difficulty) => ({

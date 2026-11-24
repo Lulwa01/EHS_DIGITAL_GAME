@@ -22,7 +22,7 @@ const en = {
 
   // Home
   logoAlt: 'Cyber Heroes',
-  tagline: 'Beat the imposter and stay cyber-safe. Choose your level to start!',
+  tagline: 'Test your cybersecurity knowledge, beat the imposter and stay cyber-safe.\nChoose your level to start!',
   audience: { kids: 'Kids Level', adults: 'Adults Level' } as Record<Audience, string>,
   start: 'Start',
 
@@ -36,9 +36,9 @@ const en = {
   chooseDifficulty: 'Choose Difficulty Level',
   spiderName: 'Spinner the Scam Spider',
   spiderTagline: 'He traps people with fake prizes and sneaky links.',
-  peopleScammed: 'people scammed',
+  peopleScammed: 'people scammed. Don’t be one of them!',
   chooseLevel: 'Choose a level',
-  level: { easy: 'Easy', normal: 'Normal', hard: 'Hard' } as Record<Difficulty, string>,
+  level: { easy: 'Easy', normal: 'Medium', hard: 'Hard' } as Record<Difficulty, string>,
 
   // Quiz
   questionOf: (n: number, total: number) => `Question ${n} of ${total}`,
@@ -89,8 +89,8 @@ const en = {
   gotIt: 'Got it!',
   helpSteps: [
     { title: 'Pick your level', text: 'Choose Kids or Adults, then enter your name or a nickname.' },
-    { title: 'Meet the imposter', text: 'Meet the scam spider, then pick Easy, Normal or Hard.' },
-    { title: 'Spot the scam', text: 'Read each story and pick the safest thing to do. There are 5 questions.' },
+    { title: 'Meet the imposter', text: 'Meet the scam spider, then pick difficulty level: easy, medium, or hard.' },
+    { title: 'Spot the scam', text: 'Read each scenario and pick the safest thing to do. There are 5 questions per round.' },
     { title: 'Earn shields', text: 'Every right answer lights up a shield. Light all 5 to beat the imposter!' },
     {
       title: 'Beat the clock',
@@ -113,7 +113,7 @@ const ar: typeof en = {
 
   // Home
   logoAlt: 'أبطال السايبر',
-  tagline: 'اهزم المحتال وابقَ آمنًا على الإنترنت. اختر مستواك لتبدأ!',
+  tagline: 'اختبر معلوماتك في الأمن السيبراني، واهزم المحتال، وابقَ آمنًا على الإنترنت.\nاختر مستواك لتبدأ!',
   audience: { kids: 'مستوى الأطفال', adults: 'مستوى الكبار' },
   start: 'ابدأ',
 
@@ -127,7 +127,7 @@ const ar: typeof en = {
   chooseDifficulty: 'اختر مستوى الصعوبة',
   spiderName: 'عنكبوت الاحتيال',
   spiderTagline: 'يوقع الناس في شباكه بجوائز وهمية وروابط مخادعة.',
-  peopleScammed: 'شخصًا وقعوا ضحية احتياله',
+  peopleScammed: 'شخصًا وقعوا ضحية احتياله. لا تكن واحدًا منهم!',
   chooseLevel: 'اختر مستوى',
   level: { easy: 'سهل', normal: 'متوسط', hard: 'صعب' },
 
@@ -177,11 +177,11 @@ const ar: typeof en = {
   // Help
   helpTitle: 'طريقة اللعب',
   closeHelp: 'إغلاق التعليمات',
-  gotIt: 'فهمت!',
+  gotIt: 'مستعد!',
   helpSteps: [
     { title: 'اختر مستواك', text: 'اختر مستوى الأطفال أو الكبار، ثم أدخل اسمك أو لقبك.' },
-    { title: 'تعرّف على المحتال', text: 'تعرّف على عنكبوت الاحتيال، ثم اختر: سهل أو متوسط أو صعب.' },
-    { title: 'اكتشف الاحتيال', text: 'اقرأ كل قصة واختر التصرف الأكثر أمانًا. هناك 5 أسئلة.' },
+    { title: 'تعرّف على المحتال', text: 'تعرّف على عنكبوت الاحتيال، ثم اختر مستوى الصعوبة: سهل أو متوسط أو صعب.' },
+    { title: 'اكتشف الاحتيال', text: 'اقرأ كل موقف واختر التصرف الأكثر أمانًا. هناك 5 أسئلة في كل جولة.' },
     { title: 'اجمع الدروع', text: 'كل إجابة صحيحة تضيء درعًا. أضئ الدروع الخمسة لتهزم المحتال!' },
     {
       title: 'سابق الوقت',

@@ -60,7 +60,7 @@ export function NameScreen({ initial, onNext }: { initial: string; onNext: (name
   const trimmed = name.trim()
   return (
     <form
-      className="screen center"
+      className="screen center name-screen"
       onSubmit={(e) => {
         e.preventDefault()
         if (trimmed) onNext(trimmed)
@@ -156,7 +156,7 @@ export function QuizScreen({ audience, imposter, questions, frozen = false, onFi
   const [held, setHeld] = useState(false)
   const [bonus, setBonus] = useState<Bonus | null>(null)
   // Shuffle option order once per round so the right answer isn't always in the same spot.
-  const [orders] = useState(() => questions.map(() => shuffle([0, 1, 2, 3])))
+  const [orders] = useState(() => questions.map((q) => shuffle(q.options.map((_, i) => i))))
   const q = questions[index]
   const answered = picked !== null
   const totalMs = ROUND_SECONDS[audience][imposter.difficulty] * 1000
@@ -323,7 +323,7 @@ export function ResultScreen({ name, score, total, timeLeftMs, onPlayAgain, onHo
   const result = t.results[Math.round((score / Math.max(total, 1)) * 5)]
 
   return (
-    <section className="screen center">
+    <section className="screen center result-screen">
       <h1 className={`display title-md tone-${result.tone}`}>{result.title}</h1>
       <div className="card score-box">
         <ShieldMeter
