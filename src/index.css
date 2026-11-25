@@ -443,7 +443,7 @@ button {
 /* Game logo image used as the home-screen title */
 .title-logo {
   margin: 0;
-  width: min(760px, 100%);
+  width: min(900px, 100%);
   line-height: 0;
 }
 .title-logo img {
